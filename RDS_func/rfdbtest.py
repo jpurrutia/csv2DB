@@ -2,20 +2,25 @@ import rds_config
 import mysql.connector
 import csv
 
+
 connection = None
 
+# create connection to MySQL database
 try:
     connection = mysql.connector.connect(user=rds_config.db_username,
                                          password=rds_config.db_password,
                                          host=rds_config.db_endpoint,
                                          port=rds_config.db_port)
                                          #database=rds_config.db_name)
-        
+
+    # create connection cursor 
     cursor = connection.cursor()
+    # execute SQL query CREATE SCHEMA
     cursor.execute("CREATE SCHEMA rfanalytics")
+    # use schema
     cursor.execute("USE rfanalytics")
 
-
+    #create table
     cursor.execute("CREATE TABLE hitters (Name VARCHAR(255), Age INTEGER, Tm VARCHAR(255), Lg VARCHAR(255), G INTEGER, PA INTEGER, AB INTEGER, R INTEGER \
                     ,H INTEGER, TWOB INTEGER, THREEB INTEGER, HR INTEGER, RBI INTEGER, SB INTEGER, CS INTEGER, BB INTEGER \
                     ,SO INTEGER, BA DECIMAL(10,2) , OBP DECIMAL(10,2), SLG DECIMAL(10,2), OPS DECIMAL(10,2), OPS_plus INTEGER, TB INTEGER, GDP INTEGER \
@@ -24,11 +29,13 @@ try:
 except mysql.connector.Error as e:
     print(e)
 
+# open csv file and create row reader to get row values in variables
 with open('/Users/jpurrutia/Desktop/RockFence/hitters_test.csv','r') as csv_file:
     csv_reader = csv.reader(csv_file, delimiter=',')
     next(csv_reader)
     for row in csv_reader:
-        print(row)
+        # prints row values
+        print(row) 
         Name=row[0]
         Age=row[1]
         Tm=row[2]
@@ -57,7 +64,9 @@ with open('/Users/jpurrutia/Desktop/RockFence/hitters_test.csv','r') as csv_file
         SH=row[25]
         SF=row[26]
         IBB=row[27]
+        # use schema 
         cursor.execute("USE rfanalytics")
+        # insert values into table
         cursor.execute("""INSERT INTO hitters (Name,Age,Tm,Lg,G,PA,AB,R,H,TWOB,THREEB,HR,RBI,SB,CS,BB,SO,BA,OBP,SLG,OPS,OPS_plus,TB,GDP,HBP,SH,SF,IBB) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)""", (Name,Age,Tm,Lg,G,PA,AB,R,H,TWOB,THREEB,HR,RBI,SB,CS,BB,SO,BA,OBP,SLG,OPS,OPS_plus,TB,GDP,HBP,SH,SF,IBB))
         connection.commit()
 
