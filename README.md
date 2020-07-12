@@ -1,4 +1,3 @@
-# CSV to MySQL via Python
+# CSV to RDS 
 
-### Initial Commit
-Needs commenting and revisions - versioning is important to update
+# second commit - adding bulk load and PostgreSQL
